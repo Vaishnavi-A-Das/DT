@@ -1,0 +1,113 @@
+sudo apt update
+sudo apt install -y wget ca-certificates
+wget https://apt.puppet.com/puppet8-release-jammy.deb
+sudo dpkg -i puppet8-release-jammy.deb
+sudo apt update
+sudo apt install -y puppetserver
+/opt/puppetlabs/bin/puppet --version
+/opt/puppetlabs/bin/puppetserver --version
+sudo nano /etc/default/puppetserver
+JAVA_ARGS="-Xms256m -Xmx512m -Djruby.logger.class=com.puppetlabs.jruby_utils.jruby.Slf4jLogger"
+sudo systemctl enable puppetserver
+sudo systemctl start puppetserver
+sudo systemctl status puppetserver --no-pager
+hostname
+hostname -f
+sudo /opt/puppetlabs/bin/puppet config print certname --section server
+sudo /opt/puppetlabs/bin/puppet config set server desktop-276q7d9.localdomain --section main
+sudo /opt/puppetlabs/bin/puppet config set certname desktop-276q7d9.localdomain --section main
+sudo /opt/puppetlabs/bin/puppet config print server
+sudo /opt/puppetlabs/bin/puppet config print certname
+sudo /opt/puppetlabs/bin/puppet agent --test
+sudo /opt/puppetlabs/bin/puppetserver ca list --all
+sudo /opt/puppetlabs/bin/puppet ssl verify
+''''
+sudo mkdir -p /etc/puppetlabs/code/environments/production/manifests
+sudo nano /etc/puppetlabs/code/environments/production/manifests/site.pp
+'''
+# React Demo Configuration
+
+package { 'git':
+  ensure => installed,
+}
+
+package { 'curl':
+  ensure => installed,
+}
+
+file { '/opt/react-demo':
+  ensure => directory,
+  mode   => '0755',
+}
+
+file { '/opt/react-demo/project-info.txt':
+  ensure  => file,
+  content => "React application environment configured using Puppet.\n",
+  mode    => '0644',
+}
+'''
+sudo /opt/puppetlabs/bin/puppet agent --test
+ls -l /opt/react-demo
+cat /opt/react-demo/project-info.txt
+cd /etc/puppetlabs/code/environments/production
+sudo mkdir -p modules/reactdemo/manifests
+
+sudo mkdir -p modules/reactdemo/lib/puppet/functions
+modules/reactdemo/manifests/init.pp
+'''
+class reactdemo {
+
+  package { 'git':
+    ensure => installed,
+  }
+
+  file { '/opt/react-demo':
+    ensure => directory,
+    mode   => '0755',
+  }
+
+  file { '/opt/react-demo/info.txt':
+    ensure  => file,
+    content => "React demo configured using Puppet Module.\n",
+    mode    => '0644',
+  }
+
+}
+'''
+modules/reactdemo/manifests/config.pp
+'''
+class reactdemo::config {
+
+  $message = reactdemo_message()
+
+  file { '/opt/react-demo/config.txt':
+    ensure  => file,
+    content => "${message}\n",
+    mode    => '0644',
+  }
+
+}
+'''
+modules/reactdemo/lib/puppet/functions/reactdemo_message.rb
+'''
+Puppet::Functions.create_function(:reactdemo_message) do
+
+  dispatch :reactdemo_message do
+  end
+
+  def reactdemo_message
+    'React Demo configured using custom Puppet function.'
+  end
+
+end
+'''
+sudo nano manifests/site.pp
+'''
+include reactdemo
+include reactdemo::config
+'''
+sudo /opt/puppetlabs/bin/puppet agent --test
+'''
+ls -l /opt/react-demo
+cat /opt/react-demo/info.txt
+cat /opt/react-demo/config.txt
