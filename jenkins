@@ -1,0 +1,51 @@
+docker --version
+docker info
+docker pull jenkins/jenkins:lts
+docker volume create jenkins_home
+docker run -d \
+  --name jenkins \
+  -p 8080:8080 \
+  -p 50000:50000 \
+  -v jenkins_home:/var/jenkins_home \
+  jenkins/jenkins:lts
+docker ps
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+'''
+#
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo 'Getting React source code'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building React application'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Testing React application'
+            }
+        }
+
+        stage('Complete') {
+            steps {
+                echo 'React CI Pipeline completed!'
+            }
+        }
+    }
+'''
+docker ps
+docker ps -a
+docker start jenkins
+docker stop jenkins
+docker logs jenkins
+docker restart jenkins
+}
