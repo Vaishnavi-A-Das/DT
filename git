@@ -1,0 +1,22 @@
+cd Desktop
+cd ~/Desktop
+npx create-react-app myapp
+git config --global user.name "Your Name"
+git config --global user.email "your-email@gmail.com"
+'''
+winget install --id GitHub.cli
+sudo apt install gh
+gh auth login
+gh auth status
+'''
+git init
+git status
+git add .
+git commit -m "initial app"
+git branch -M main
+git remote add origin https://github.com/USERNAME/myapp.git
+git push -u origin main
+git remote -v
+git log --oneline
+git branch
+git switch -c feature-demo
